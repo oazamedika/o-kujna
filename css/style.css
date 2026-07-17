@@ -334,6 +334,13 @@ body:has(.app-shell) {
   overflow: hidden;
 }
 
+/* Force the native [hidden] attribute to win over the .app-topbar / .screen
+   "display: flex" rules above — otherwise both steps render at once. */
+.app-topbar[hidden],
+.screen[hidden] {
+  display: none !important;
+}
+
 /* ---- Step 1: full-screen meal picker ---- */
 
 .screen-meal {
