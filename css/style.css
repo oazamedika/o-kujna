@@ -409,11 +409,16 @@ a:focus-visible {
   gap: 12px;
 }
 
+@media (max-width: 560px) {
+  .portions-grid { grid-template-columns: 1fr; }
+}
+
 .portion-box {
   background: var(--paper);
   border-radius: 10px;
   padding: 14px;
   text-align: center;
+  transition: opacity 0.15s ease;
 }
 
 .portion-box label {
@@ -421,18 +426,94 @@ a:focus-visible {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--ink-soft);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.portion-box input {
+.stepper {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.stepper input {
   width: 100%;
+  min-width: 0;
   text-align: center;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 1.6rem;
-  font-weight: 600;
-  border: none;
-  background: transparent;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border: 1.5px solid var(--line);
+  background: #fff;
   color: var(--charcoal);
+  border-radius: 8px;
+  padding: 6px 2px;
+}
+
+.step-btn {
+  background: var(--sage);
+  color: #fff;
+  border-radius: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-width: 52px;
+  min-height: 52px;
+  box-shadow: 0 2px 4px rgba(35,38,31,0.15);
+  transition: transform 0.08s ease, background 0.1s ease;
+}
+.step-btn:active {
+  transform: scale(0.93);
+  background: var(--sage-dark);
+}
+.step-btn.step-minus1, .step-btn.step-minus10 {
+  background: var(--charcoal);
+}
+.step-btn.step-minus1:active, .step-btn.step-minus10:active {
+  background: var(--charcoal-light);
+}
+
+@media (max-width: 400px) {
+  .step-btn { min-width: 40px; font-size: 0.78rem; padding: 0 2px; }
+}
+
+.portion-box.disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.employees-disabled-note {
+  display: none;
+  margin-top: 10px;
+  font-size: 0.76rem;
+  color: var(--danger);
+  font-weight: 600;
+}
+.portion-box.disabled .employees-disabled-note {
+  display: block;
+}
+
+/* ---------- Required / invalid states ---------- */
+
+.field.invalid input,
+.field.invalid select,
+.field.invalid textarea,
+.ingredient-row.invalid select,
+.ingredient-row.invalid input {
+  border-color: var(--danger) !important;
+  background: #FBEDEA;
+}
+
+.meal-picker.invalid .meal-chip,
+#ingredientRows.invalid {
+  box-shadow: 0 0 0 2px var(--danger);
+  border-radius: 10px;
+}
+
+/* select that still needs a tap-to-choose value */
+select.placeholder-selected {
+  color: var(--ink-soft);
+  font-style: italic;
 }
 
 .submit-bar {
