@@ -12,79 +12,90 @@
 </head>
 <body>
 
-<div class="app-topbar">
-  <div class="brand"><span class="stamp-dot"></span> Кујна Дневник</div>
-  <div class="who">
-    <span id="whoName"></span>
-    <a href="view.html" class="link-btn">Стари ставки</a>
-    <button class="link-btn" id="logoutBtn">Одјава</button>
-  </div>
+<!-- shown only if the device is in portrait and we can't force-lock it -->
+<div class="rotate-overlay" id="rotateOverlay">
+  <div class="rotate-icon">⟳</div>
+  <p>Ротирајте го уредот хоризонтално</p>
 </div>
 
-<div class="page">
+<div class="app-shell">
 
-  <div class="field">
-    <span class="section-label">Оброк *</span>
-    <div class="meal-picker" id="mealPicker">
-      <button class="meal-chip" data-meal="Појадок">Појадок</button>
-      <button class="meal-chip" data-meal="Ужина наутро">Ужина наутро</button>
-      <button class="meal-chip" data-meal="Ручек">Ручек</button>
-      <button class="meal-chip" data-meal="Ужина попладне">Ужина попладне</button>
-      <button class="meal-chip" data-meal="Вечера">Вечера</button>
+  <!-- STEP 1 topbar: full -->
+  <div class="app-topbar" id="topbarFull">
+    <div class="brand"><span class="stamp-dot"></span> Кујна Дневник</div>
+    <div class="who">
+      <span id="whoName"></span>
+      <a href="view.html" class="link-btn">Стари ставки</a>
+      <button class="link-btn" id="logoutBtn">Одјава</button>
     </div>
   </div>
 
-  <div class="entry-grid">
-
-    <div class="card">
-      <span class="section-label">Состојки *</span>
-      <div id="ingredientRows"></div>
-      <button class="add-ingredient-btn" id="addIngredientBtn">+ Додади состојка</button>
+  <!-- STEP 2 topbar: compact (meal name + back + date) -->
+  <div class="app-topbar topbar-entry" id="topbarEntry" hidden>
+    <div class="entry-header-left">
+      <button class="link-btn" id="backBtn">‹ Врати се назад</button>
+      <span class="meal-name-display" id="mealNameDisplay"></span>
     </div>
-
-    <div>
-      <div class="card" style="margin-bottom: 18px;">
-        <div class="field" style="margin-bottom: 14px;">
-          <label for="entryDate">Датум *</label>
-          <input type="date" id="entryDate" required>
-        </div>
-        <div class="field" style="margin-bottom: 0;">
-          <label for="descInput">Опис (пр. Грав со колбаси) *</label>
-          <textarea id="descInput" placeholder="Краток опис на јадењето..." required></textarea>
-        </div>
-      </div>
-
-      <div class="card">
-        <span class="section-label">Служени порции *</span>
-        <div class="portions-grid">
-          <div class="portion-box">
-            <label>Корисници</label>
-            <div class="stepper">
-              <button type="button" class="step-btn step-minus10" data-target="portionsUsers" data-delta="-10">−10</button>
-              <button type="button" class="step-btn step-minus1" data-target="portionsUsers" data-delta="-1">−1</button>
-              <input type="number" id="portionsUsers" min="0" inputmode="numeric" value="0" required>
-              <button type="button" class="step-btn step-plus1" data-target="portionsUsers" data-delta="1">+1</button>
-              <button type="button" class="step-btn step-plus10" data-target="portionsUsers" data-delta="10">+10</button>
-            </div>
-          </div>
-          <div class="portion-box" id="employeesBox">
-            <label>Вработени</label>
-            <div class="stepper">
-              <button type="button" class="step-btn step-minus10" data-target="portionsEmployees" data-delta="-10">−10</button>
-              <button type="button" class="step-btn step-minus1" data-target="portionsEmployees" data-delta="-1">−1</button>
-              <input type="number" id="portionsEmployees" min="0" inputmode="numeric" value="0" required>
-              <button type="button" class="step-btn step-plus1" data-target="portionsEmployees" data-delta="1">+1</button>
-              <button type="button" class="step-btn step-plus10" data-target="portionsEmployees" data-delta="10">+10</button>
-            </div>
-            <div class="employees-disabled-note" id="employeesNote">Не се служи на вработени за ужина</div>
-          </div>
-        </div>
-      </div>
+    <div class="entry-header-right">
+      <input type="date" id="entryDate" required>
     </div>
   </div>
 
-  <div class="submit-bar">
-    <button class="btn btn-primary btn-block" id="submitBtn">Зачувај ставка</button>
+  <!-- STEP 1 screen: meal picker, full screen -->
+  <div class="screen screen-meal" id="screenMeal">
+    <div class="meal-picker-full" id="mealPicker">
+      <button class="meal-chip-lg" data-meal="Појадок">Појадок</button>
+      <button class="meal-chip-lg" data-meal="Ужина наутро">Ужина наутро</button>
+      <button class="meal-chip-lg" data-meal="Ручек">Ручек</button>
+      <button class="meal-chip-lg" data-meal="Ужина попладне">Ужина попладне</button>
+      <button class="meal-chip-lg" data-meal="Вечера">Вечера</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 screen: entry form -->
+  <div class="screen screen-entry" id="screenEntry" hidden>
+
+    <input type="text" id="descInput" class="desc-input-plain" placeholder="Внеси име на оброк" required>
+
+    <div class="entry-body">
+
+      <div class="ingredients-panel">
+        <span class="section-label">Состојки *</span>
+        <div id="ingredientRows"></div>
+        <button class="add-ingredient-btn" id="addIngredientBtn">+ Додади состојка</button>
+      </div>
+
+      <div class="portions-panel">
+        <div class="portion-box" id="usersBox">
+          <label>Корисници</label>
+          <div class="stepper-vert">
+            <button type="button" class="step-btn step-plus10" data-target="portionsUsers" data-delta="10">+10</button>
+            <button type="button" class="step-btn step-plus1" data-target="portionsUsers" data-delta="1">+1</button>
+            <input type="number" id="portionsUsers" min="0" inputmode="numeric" value="0" required>
+            <button type="button" class="step-btn step-minus1" data-target="portionsUsers" data-delta="-1">−1</button>
+            <button type="button" class="step-btn step-minus10" data-target="portionsUsers" data-delta="-10">−10</button>
+          </div>
+        </div>
+
+        <div class="portion-box" id="employeesBox">
+          <label>Вработени</label>
+          <div class="stepper-vert">
+            <button type="button" class="step-btn step-plus10" data-target="portionsEmployees" data-delta="10">+10</button>
+            <button type="button" class="step-btn step-plus1" data-target="portionsEmployees" data-delta="1">+1</button>
+            <input type="number" id="portionsEmployees" min="0" inputmode="numeric" value="0" required>
+            <button type="button" class="step-btn step-minus1" data-target="portionsEmployees" data-delta="-1">−1</button>
+            <button type="button" class="step-btn step-minus10" data-target="portionsEmployees" data-delta="-10">−10</button>
+          </div>
+          <div class="employees-disabled-note" id="employeesNote">Не се служи на вработени за ужина</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="submit-bar">
+      <button class="btn btn-primary btn-block" id="submitBtn">Зачувај ставка</button>
+    </div>
+
   </div>
 
 </div>
