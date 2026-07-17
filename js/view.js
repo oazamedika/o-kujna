@@ -1,29 +1,24 @@
 (function () {
   const userName = Session.requireLogin();
   if (!userName) return;
-
   document.getElementById('whoName').textContent = userName;
   document.getElementById('logoutBtn').addEventListener('click', () => {
     Session.clear();
     window.location.href = 'index.html';
   });
-
   const listWrap = document.getElementById('listWrap');
   const fromDate = document.getElementById('fromDate');
   const toDate = document.getElementById('toDate');
   const mealFilter = document.getElementById('mealFilter');
   const filterBtn = document.getElementById('filterBtn');
-
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
-
   function formatDateMk(iso) {
     if (!iso) return '';
     const [y, m, d] = iso.split('-');
     return `${d}.${m}.${y}`;
   }
-
   function renderEntries(entries) {
     if (!entries.length) {
       listWrap.innerHTML = `
@@ -33,34 +28,41 @@
         </div>`;
       return;
     }
-
     listWrap.innerHTML = `<div class="entries-list">${entries.map(entryTicketHtml).join('')}</div>`;
   }
-
   function entryTicketHtml(entry) {
     const itemsHtml = (entry.items || []).map(it =>
-      `<span class="ticket-item-chip">${escapeHtml(it.grocery)} · ${it.quantity} ${escapeHtml(it.unit)}</span>`
+      `<tr><td>${escapeHtml(it.grocery)}</td><td>${it.quantity}</td><td>${escapeHtml(it.unit)}</td></tr>`
     ).join('');
-
+    const name = entry.description ? escapeHtml(entry.description) : escapeHtml(entry.mealType);
     return `
       <div class="entry-ticket">
-        <div class="ticket-top">
-          <span class="ticket-meal">${escapeHtml(entry.mealType)}</span>
-          <span class="ticket-date mono">${formatDateMk(entry.date)}</span>
+        <div class="ticket-main">
+          <div class="ticket-name">${name}</div>
+          <div class="ticket-meta">${escapeHtml(entry.mealType)} &middot; ${formatDateMk(entry.date)}</div>
+          <table class="ticket-table">
+            <thead>
+              <tr><th>Состојка</th><th>Количина</th><th>Единица</th></tr>
+            </thead>
+            <tbody>
+              ${itemsHtml || `<tr><td colspan="3" class="ticket-empty-row">Нема состојки</td></tr>`}
+            </tbody>
+          </table>
         </div>
-        ${entry.description ? `<div class="ticket-desc">${escapeHtml(entry.description)}</div>` : ''}
-        <div class="ticket-items">${itemsHtml}</div>
-        <div class="ticket-bottom">
-          <span>Внел: ${escapeHtml(entry.userName || '—')}</span>
-          <span class="ticket-portions">
-            <span>К: ${entry.portionsUsers ?? 0}</span>
-            <span>В: ${entry.portionsEmployees ?? 0}</span>
-          </span>
+        <div class="ticket-stats">
+          <div class="stat-block">
+            <span class="stat-num">${entry.portionsUsers ?? 0}</span>
+            <span class="stat-label">Корисници</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-num">${entry.portionsEmployees ?? 0}</span>
+            <span class="stat-label">Вработени</span>
+          </div>
         </div>
+        <div class="ticket-footer">Внел: ${escapeHtml(entry.userName || '—')}</div>
       </div>
     `;
   }
-
   async function loadEntries() {
     listWrap.innerHTML = '<div class="spinner"></div>';
     try {
@@ -78,7 +80,6 @@
       listWrap.innerHTML = `<div class="empty-state"><p>Нема врска со серверот.</p></div>`;
     }
   }
-
   filterBtn.addEventListener('click', loadEntries);
   loadEntries();
 })();
