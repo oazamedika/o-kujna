@@ -177,63 +177,96 @@ a:focus-visible {
 /* ---------- LOGIN PAGE ---------- */
 
 .login-wrap {
-  min-height: 100dvh;
+  height: 100dvh;
+  width: 100vw;
   display: flex;
+  overflow: hidden;
+  background: var(--charcoal);
+}
+
+/* ---- Left: branding panel, fills remaining space ---- */
+
+.login-brand {
+  flex: 1.15;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  gap: 20px;
+  padding: 40px;
+  text-align: center;
+  position: relative;
   background:
-    radial-gradient(circle at 15% 10%, rgba(76,122,94,0.10), transparent 40%),
-    radial-gradient(circle at 85% 90%, rgba(193,101,27,0.12), transparent 40%),
+    radial-gradient(circle at 18% 20%, rgba(76,122,94,0.22), transparent 45%),
+    radial-gradient(circle at 82% 80%, rgba(193,101,27,0.20), transparent 45%),
     var(--charcoal);
 }
 
-.login-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--paper);
-  border-radius: 18px;
-  padding: 32px 28px 28px;
-  box-shadow: var(--shadow-lift);
-  text-align: center;
-}
-
-.login-stamp {
-  width: 76px;
-  height: 76px;
-  margin: 0 auto 14px;
+.login-brand .login-stamp {
+  width: 110px;
+  height: 110px;
+  margin: 0;
   border-radius: 50%;
-  border: 3px solid var(--carrot);
+  border: 4px solid var(--carrot);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Oswald', sans-serif;
-  font-size: 1.6rem;
-  color: var(--charcoal);
-  background: #fff;
+  font-size: 2.6rem;
+  color: var(--paper);
+  background: rgba(239, 235, 225, 0.06);
 }
 
-.login-card h1 {
-  font-size: 1.5rem;
-  margin-bottom: 4px;
+.login-brand h1 {
+  color: var(--paper);
+  font-size: 1.9rem;
+  max-width: 420px;
+  line-height: 1.25;
+}
+
+.login-brand-sub {
+  color: var(--paper-dim);
+  font-size: 0.98rem;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+/* ---- Right: PIN panel, fixed width, full height ---- */
+
+.login-panel {
+  flex: 0 0 clamp(320px, 34vw, 480px);
+  min-height: 0;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  box-shadow: -6px 0 20px rgba(35, 38, 31, 0.18);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
 }
 
 .login-sub {
   color: var(--ink-soft);
-  font-size: 0.92rem;
-  margin-bottom: 22px;
+  font-size: 0.95rem;
+  margin-bottom: 26px;
 }
 
 .pin-display {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 22px;
 }
 
 .pin-dot {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: 2px solid var(--charcoal);
   background: transparent;
@@ -245,14 +278,14 @@ a:focus-visible {
   color: var(--danger);
   font-size: 0.88rem;
   min-height: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-weight: 600;
 }
 
 .pin-pad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 .pin-key {
@@ -260,18 +293,52 @@ a:focus-visible {
   border: 1.5px solid var(--line);
   border-radius: 12px;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--charcoal);
-  aspect-ratio: 1.5 / 1;
-  min-height: 58px;
+  aspect-ratio: 1.4 / 1;
+  min-height: 64px;
+  box-shadow: var(--shadow);
+  transition: transform 0.08s ease, background 0.1s ease;
 }
-.pin-key:active { background: var(--paper-dim); }
+.pin-key:active { background: var(--paper-dim); transform: scale(0.95); }
 
 .pin-key.clear, .pin-key.back {
   font-family: 'Work Sans', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--ink-soft);
+  box-shadow: none;
+  background: transparent;
+  border-color: var(--line);
+}
+.pin-key.clear:active, .pin-key.back:active { background: var(--paper-dim); }
+
+/* ---- Narrow / portrait fallback: stack instead of side-by-side ---- */
+
+@media (max-width: 760px), (orientation: portrait) {
+  .login-wrap { flex-direction: column; }
+
+  .login-brand {
+    flex: 0 0 auto;
+    padding: 28px 20px;
+    gap: 12px;
+  }
+  .login-brand .login-stamp {
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
+    border-width: 3px;
+  }
+  .login-brand h1 { font-size: 1.25rem; }
+  .login-brand-sub { display: none; }
+
+  .login-panel {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    box-shadow: none;
+    padding: 24px 20px;
+  }
 }
 
 /* ============================================================
