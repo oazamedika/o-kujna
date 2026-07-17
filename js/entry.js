@@ -8,6 +8,17 @@
     window.location.href = 'index.html';
   });
 
+  // ---- Force landscape ----
+  function lockLandscape() {
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {});
+      }
+    } catch (e) { /* not supported, rotate-overlay CSS handles the fallback */ }
+  }
+  lockLandscape();
+  document.addEventListener('click', lockLandscape, { once: true }); // some browsers only allow lock after a user gesture
+
   document.getElementById('entryDate').valueAsDate = new Date();
 
   const toast = document.getElementById('toast');
@@ -40,17 +51,41 @@
     }
   }
 
-  // ---- Meal picker ----
+  // ---- Screen navigation (Step 1: pick meal -> Step 2: entry form) ----
+  const topbarFull = document.getElementById('topbarFull');
+  const topbarEntry = document.getElementById('topbarEntry');
+  const screenMeal = document.getElementById('screenMeal');
+  const screenEntry = document.getElementById('screenEntry');
+  const mealNameDisplay = document.getElementById('mealNameDisplay');
+  const backBtn = document.getElementById('backBtn');
   const mealPicker = document.getElementById('mealPicker');
+
+  function goToMealScreen() {
+    selectedMeal = null;
+    screenEntry.hidden = true;
+    screenMeal.hidden = false;
+    topbarEntry.hidden = true;
+    topbarFull.hidden = false;
+    mealPicker.querySelectorAll('.meal-chip-lg').forEach(c => c.classList.remove('active'));
+  }
+
+  function goToEntryScreen(meal) {
+    selectedMeal = meal;
+    mealNameDisplay.textContent = meal;
+    screenMeal.hidden = true;
+    screenEntry.hidden = false;
+    topbarFull.hidden = true;
+    topbarEntry.hidden = false;
+    applyMealSideEffects(meal);
+  }
+
   mealPicker.addEventListener('click', (e) => {
-    const chip = e.target.closest('.meal-chip');
+    const chip = e.target.closest('.meal-chip-lg');
     if (!chip) return;
-    mealPicker.querySelectorAll('.meal-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    selectedMeal = chip.dataset.meal;
-    mealPicker.classList.remove('invalid');
-    applyMealSideEffects(selectedMeal);
+    goToEntryScreen(chip.dataset.meal);
   });
+
+  backBtn.addEventListener('click', goToMealScreen);
 
   // ---- Portion steppers ----
   document.querySelectorAll('.step-btn').forEach(btn => {
@@ -69,7 +104,7 @@
   // ---- Ingredient rows ----
   const rowsWrap = document.getElementById('ingredientRows');
 
-  const TAP_TO_SELECT = 'Тапни за избор';
+  const TAP_TO_SELECT = 'Допри за да обереш состојка';
 
   function groceryOptionsHtml() {
     const placeholder = `<option value="" disabled selected>${TAP_TO_SELECT}</option>`;
@@ -78,15 +113,19 @@
     ).join('');
   }
 
+  // Unit select auto-selects the first available unit once a grocery is chosen,
+  // so the user only has to tap it if they want a different one.
   function unitOptionsHtml(groceryName) {
     if (!groceryName) {
-      return `<option value="" disabled selected>${TAP_TO_SELECT}</option>`;
+      return `<option value="" disabled selected></option>`;
     }
     const g = groceries.find(g => g.name === groceryName);
     const units = g ? g.units : [];
-    const placeholder = `<option value="" disabled selected>${TAP_TO_SELECT}</option>`;
-    return placeholder + units.map(u =>
-      `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`
+    if (!units.length) {
+      return `<option value="" disabled selected></option>`;
+    }
+    return units.map((u, i) =>
+      `<option value="${escapeHtml(u)}"${i === 0 ? ' selected' : ''}>${escapeHtml(u)}</option>`
     ).join('');
   }
 
@@ -108,7 +147,7 @@
     div.innerHTML = `
       <select class="ing-grocery placeholder-selected">${groceryOptionsHtml()}</select>
       <input type="number" class="ing-qty" placeholder="0" min="0" step="any" inputmode="decimal">
-      <select class="ing-unit placeholder-selected" disabled>${unitOptionsHtml('')}</select>
+      <select class="ing-unit" disabled>${unitOptionsHtml('')}</select>
       <button type="button" class="row-remove" aria-label="Отстрани">×</button>
     `;
     rowsWrap.appendChild(div);
@@ -160,14 +199,11 @@
   const submitBtn = document.getElementById('submitBtn');
   let submitting = false;
 
-  const dateField = document.getElementById('entryDate').closest('.field');
-  const descField = document.getElementById('descInput').closest('.field');
+  const descField = document.getElementById('descInput');
   const usersBox = document.getElementById('portionsUsers').closest('.portion-box');
 
   function clearAllInvalid() {
-    mealPicker.classList.remove('invalid');
     rowsWrap.querySelectorAll('.ingredient-row').forEach(r => r.classList.remove('invalid'));
-    dateField.classList.remove('invalid');
     descField.classList.remove('invalid');
     usersBox.classList.remove('invalid');
     employeesBox.classList.remove('invalid');
@@ -179,19 +215,12 @@
     let ok = true;
 
     if (!selectedMeal) {
-      mealPicker.classList.add('invalid');
       ok = false;
-      firstInvalid = firstInvalid || mealPicker;
     }
 
     const date = document.getElementById('entryDate').value;
-    if (!date) {
-      dateField.classList.add('invalid');
-      ok = false;
-      firstInvalid = firstInvalid || dateField;
-    }
 
-    const description = document.getElementById('descInput').value.trim();
+    const description = descField.value.trim();
     if (!description) {
       descField.classList.add('invalid');
       ok = false;
@@ -275,9 +304,7 @@
   });
 
   function resetForm() {
-    mealPicker.querySelectorAll('.meal-chip').forEach(c => c.classList.remove('active'));
-    selectedMeal = null;
-    document.getElementById('descInput').value = '';
+    descField.value = '';
     document.getElementById('portionsUsers').value = 0;
     employeesInput.disabled = false;
     employeesInput.value = 0;
@@ -286,5 +313,6 @@
     rowsWrap.innerHTML = '';
     addRow();
     clearAllInvalid();
+    goToMealScreen();
   }
 })();
