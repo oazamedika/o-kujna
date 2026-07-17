@@ -705,73 +705,130 @@ select.placeholder-selected {
   background: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 16px 18px;
+  padding: 18px 20px;
   position: relative;
   border-left: 5px solid var(--sage);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "main   stats"
+    "footer footer";
+  column-gap: 22px;
+  row-gap: 12px;
 }
 
-.entry-ticket .ticket-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 6px;
-  flex-wrap: wrap;
-}
+.ticket-main { grid-area: main; min-width: 0; }
 
-.ticket-meal {
+.ticket-name {
   font-family: 'Oswald', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 1rem;
+  letter-spacing: 0.03em;
+  font-size: 1.15rem;
+  font-weight: 600;
   color: var(--charcoal);
 }
 
-.ticket-date {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.82rem;
-  color: var(--ink-soft);
-}
-
-.ticket-desc {
-  font-size: 0.95rem;
-  color: var(--ink);
-  margin-bottom: 10px;
+.ticket-meta {
   font-style: italic;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin: 3px 0 12px;
 }
 
-.ticket-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
 }
 
-.ticket-item-chip {
-  background: var(--paper);
-  border-radius: 999px;
-  padding: 5px 12px;
-  font-size: 0.8rem;
-  font-family: 'IBM Plex Mono', monospace;
+.ticket-table th {
+  text-align: left;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.72rem;
+  color: var(--sage-dark);
+  font-weight: 600;
+  padding: 0 10px 6px 0;
+  border-bottom: 1.5px solid var(--line);
+}
+
+.ticket-table td {
+  padding: 7px 10px 7px 0;
+  border-bottom: 1px dashed var(--line);
   color: var(--ink);
 }
 
-.ticket-bottom {
+.ticket-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ticket-table td:nth-child(2),
+.ticket-table td:nth-child(3),
+.ticket-table th:nth-child(2),
+.ticket-table th:nth-child(3) {
+  font-family: 'IBM Plex Mono', monospace;
+  white-space: nowrap;
+}
+
+.ticket-empty-row {
+  color: var(--ink-soft);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.ticket-stats {
+  grid-area: stats;
   display: flex;
-  justify-content: space-between;
+  gap: 16px;
   align-items: center;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  padding: 10px 14px;
+  background: var(--paper);
+  border-radius: var(--radius);
+}
+
+.stat-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  line-height: 1;
+}
+
+.stat-label {
+  margin-top: 6px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.ticket-footer {
+  grid-area: footer;
   border-top: 1px dashed var(--line);
   padding-top: 10px;
   font-size: 0.82rem;
   color: var(--ink-soft);
 }
 
-.ticket-portions {
-  display: flex;
-  gap: 14px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-weight: 600;
-  color: var(--charcoal);
+@media (max-width: 640px) {
+  .entry-ticket {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "main"
+      "stats"
+      "footer";
+  }
+  .ticket-stats { justify-content: flex-start; }
 }
 
 .empty-state {
