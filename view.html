@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Кујна - Стари ставки</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2B2E28">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-topbar">
+  <div class="brand"><span class="stamp-dot"></span> Кујна Дневник</div>
+  <div class="who">
+    <span id="whoName"></span>
+    <a href="entry.html" class="link-btn">Нова ставка</a>
+    <button class="link-btn" id="logoutBtn">Одјава</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="filter-bar">
+    <div class="field">
+      <label for="fromDate">Од датум</label>
+      <input type="date" id="fromDate">
+    </div>
+    <div class="field">
+      <label for="toDate">До датум</label>
+      <input type="date" id="toDate">
+    </div>
+    <div class="field">
+      <label for="mealFilter">Оброк</label>
+      <select id="mealFilter">
+        <option value="">Сите оброци</option>
+        <option value="Појадок">Појадок</option>
+        <option value="Ужина наутро">Ужина наутро</option>
+        <option value="Ручек">Ручек</option>
+        <option value="Ужина попладне">Ужина попладне</option>
+        <option value="Вечера">Вечера</option>
+      </select>
+    </div>
+    <button class="btn btn-secondary" id="filterBtn">Филтрирај</button>
+  </div>
+
+  <div id="listWrap">
+    <div class="spinner"></div>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/session.js"></script>
+<script src="js/view.js"></script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script>
+</body>
+</html>
